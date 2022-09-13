@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+</head>
+<script src="https://unpkg.com/vue@3"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<body style="background-color: #1c5cbb; padding-top: 250px;">
+
+    <div id="app" style="width: 400px; margin: 0px auto;  background-color: #9cbcec; text-align: center;">
+
+        <h1 style="color: white;">Iniciar sesión</h1>
+        <form id="frmLogin" action="dashboard.html" method="POST" @submit.prevent="login">
+
+            <div class="form-group mb-4">
+              <label style="color: white; font-size: 22px;">User</label>
+              <br>
+              <input type="text" style="font-size: 22px;" placeholder="Username" v-model="username" required>
+            </div>
+            <br>
+            <div class="form-group mb-4">
+              <label style="color: white; font-size: 22px;">Password</label>
+              <br>
+              <input type="password" style="font-size: 22px;" placeholder="Password" v-model="password" required minlength="1">
+            </div>
+            <br>
+            <button type="submit" style="background-color: #1adf13; border-radius: 5px; border: none; font-size: 22px;">Login</button>
+
+          </form>
+
+    </div>
+
+    <script>
+        const { createApp } = Vue
+
+        createApp({
+            data() {
+                return {
+                    users: [],
+                    error: '',
+                    username: '',
+                    password: '',
+                    flag: true,
+                }
+            },
+            methods:{
+                 async login(){
+                    this.error = '';
+
+                    var data = new FormData();
+                    data.append('username', this.username);
+                    data.append('password', this.password);
+                    data.append('request_token', '');
+
+                    var config = {
+                    method: 'post',
+                    url: 'https://api.themoviedb.org/3/authentication/token/validate_with_login?api_key=01658ea8664e9e4686665b3378cad6e2',
+                    data : data
+                    };
+
+                    try {
+                        const response = await axios(config)
+                        if(response.data.success){
+                            sessionStorage.setItem("user", JSON.stringify(this.username));
+                            location.href = "index.html";
+                        }
+                    } catch (error) {
+                        this.error = "Parametros incorrectos";
+                    }
+                }
+            },
+            mounted(){
+                if(sessionStorage.user){
+                    location.href = "index.html";
+                }
+            }
+        }).mount('#app')
+    </script>
+
+</body>
+</html>
